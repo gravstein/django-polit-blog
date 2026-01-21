@@ -1,0 +1,32 @@
+header {
+    background-color: #777;
+}
+header a {
+    background-color: #777;
+    color: #ffffff !important;
+}
+header .container {
+    padding-left: 23px;
+    display: flex;
+    justify-content: space-between !important;
+}
+
+.logo img {
+    width: 568px;
+    max-height:138px;
+    height:auto;
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+}
+.social-links a {
+    font-size: 18px;
+    line-height: 1;
+    margin-left: 7px;
+    margin-right: 7px;
+}
+.social-links img {
+    height: 18px;
+}
