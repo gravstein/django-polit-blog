@@ -1,1 +1,135 @@
 {% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Главная - ITPC EECA{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            <h1 class="mb-4">Новости</h1>
+
+            {% for news in news_list %}
+                <article class="news-card card">
+                    <div class="card-body">
+                        <div class="news-meta">
+                    <span>
+                        <i class="far fa-user"></i>
+                        <a href="#">{{ news.author }}</a>
+                    </span>
+                            <span class="ms-3">
+                        <i class="far fa-calendar"></i>
+                        {{ news.date|date:"d.m.Y" }}
+                    </span>
+                            <span class="ms-3">
+                        <i class="far fa-folder"></i>
+                                {% for category in news.categories.all %}
+                                    <a href="{% url 'category' category.slug %}">{{ category.name }}</a>
+                                    {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                    </span>
+                            <span class="ms-3">
+                        <i class="far fa-comment"></i>
+                        <a href="{{ news.get_absolute_url }}#comments">{{ news.comments_count }} комментариев</a>
+                    </span>
+                        </div>
+
+                        <h2 class="card-title">
+                            <a href="{{ news.get_absolute_url }}" class="text-decoration-none">
+                                {{ news.title }}
+                            </a>
+                        </h2>
+
+                        <div class="card-text">
+                            {{ news.excerpt|safe }}
+                        </div>
+
+                        <a href="{{ news.get_absolute_url }}" class="btn btn-sm btn-outline-primary mt-2">
+                            Читать далее <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="alert">
+                    <i class="fas fa-info-circle"></i> Новостей пока нет
+                </div>
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
+                                   aria-label="Предыдущая">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}"
+                                   aria-label="Следующая">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Search Widget -->
+            <div class="sidebar-widget">
+                <h4>Поиск</h4>
+                <form method="get" action="" class="search-form">
+                    {#                <form method="get" action="{% url 'search' %}">#}
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Поиск по сайту..."
+                               value="{{ request.GET.q }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Categories Widget -->
+            <div class="sidebar-widget">
+                <h4>Рубрики</h4>
+                <ul>
+                    <li><a href="#">Плакаты</a></li>
+                    <li><a href="#">Исследования</a></li>
+                    <li><a href="#">Презентации</a></li>
+                    <li><a href="#">Обучение</a></li>
+                    <li><a href="#">Петиции</a></li>
+                    <li><a href="#">Протоколы лечения</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

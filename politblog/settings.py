@@ -122,4 +122,4 @@ DATETIME_FORMAT = 'N j, Y H:i'
 STATIC_URL = 'static/'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'politblogApp/../static'),)
