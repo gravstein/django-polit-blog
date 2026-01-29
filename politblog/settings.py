@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'politblogApp',
     'crispy_forms',
     'crispy_bootstrap5',
+    'unidecode',
 ]
 
 MIDDLEWARE = [

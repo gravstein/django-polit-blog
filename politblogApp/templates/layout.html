@@ -73,14 +73,20 @@
                             Основные проекты
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Рассылка ITPC EECA</a></li>
-                            <li><a class="dropdown-item" href="#">Мониторинг закупок препаратов</a></li>
-                            <li><a class="dropdown-item" href="#">Мониторинг цен в странах ВЕЦА</a></li>
-                            <li><a class="dropdown-item" href="#">Интеллектуальная собственность</a></li>
-                            <li><a class="dropdown-item" href="#">Гепатиты</a></li>
-                            <li><a class="dropdown-item" href="#">ЕСАТ</a></li>
-                            <li><a class="dropdown-item" href="#">Подкасты</a></li>
-                            <li><a class="dropdown-item" href="#">ITPC EECA TV</a></li>
+                            {% for cat in categories %}
+                                {% if cat.main_project %}
+                                    <li><a class="dropdown-item" href="{% url 'category_news' cat.slug %}">{{cat.name}}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+{#                            <li><a class="dropdown-item" href="#">Рассылка ITPC EECA</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">Мониторинг закупок препаратов</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">Мониторинг цен в странах ВЕЦА</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">Интеллектуальная собственность</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">Гепатиты</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">ЕСАТ</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">Подкасты</a></li>#}
+{#                            <li><a class="dropdown-item" href="#">ITPC EECA TV</a></li>#}
                         </ul>
                     </li>
                     <li class="nav-item">

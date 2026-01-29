@@ -13,21 +13,17 @@
                 <article class="news-card card">
                     <div class="card-body">
                         <div class="news-meta">
-                    <span>
-                        <i class="far fa-user"></i>
-                        <a href="#">{{ news.author }}</a>
-                    </span>
                             <span class="ms-3">
-                        <i class="far fa-calendar"></i>
-                        {{ news.date|date:"d.m.Y" }}
-                    </span>
+                                <i class="far fa-calendar"></i>
+                                {{ news.date|date:"d.m.Y" }}
+                            </span>
                             <span class="ms-3">
-                        <i class="far fa-folder"></i>
+                                <i class="far fa-folder"></i>
                                 {% for category in news.categories.all %}
-                                    <a href="{% url 'category' category.slug %}">{{ category.name }}</a>
+                                    <a href="{% url 'category_news' category.slug %}">{{ category.name }}</a>
                                     {% if not forloop.last %}, {% endif %}
                                 {% endfor %}
-                    </span>
+                            </span>
                             <span class="ms-3">
                         <i class="far fa-comment"></i>
                         <a href="{{ news.get_absolute_url }}#comments">{{ news.comments_count }} комментариев</a>
@@ -106,8 +102,8 @@
             <!-- Search Widget -->
             <div class="sidebar-widget">
                 <h4>Поиск</h4>
-                <form method="get" action="" class="search-form">
-                    {#                <form method="get" action="{% url 'search' %}">#}
+                <form method="get" action="{% url 'search_news' %}" class="search-form">
+{#                                    <form method="get" action="{% url 'search' %}">#}
                     <div class="input-group">
                         <input type="text" name="q" class="form-control" placeholder="Поиск по сайту..."
                                value="{{ request.GET.q }}">
@@ -122,12 +118,18 @@
             <div class="sidebar-widget">
                 <h4>Рубрики</h4>
                 <ul>
-                    <li><a href="#">Плакаты</a></li>
-                    <li><a href="#">Исследования</a></li>
-                    <li><a href="#">Презентации</a></li>
-                    <li><a href="#">Обучение</a></li>
-                    <li><a href="#">Петиции</a></li>
-                    <li><a href="#">Протоколы лечения</a></li>
+                    {% for cat in categories %}
+                        {% if not cat.main_project %}
+                            <li><a href="{% url 'category_news' cat.slug %}">{{cat.name}}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+{#                    <li><a href="#">Плакаты</a></li>#}
+{#                    <li><a href="#">Исследования</a></li>#}
+{#                    <li><a href="#">Презентации</a></li>#}
+{#                    <li><a href="#">Обучение</a></li>#}
+{#                    <li><a href="#">Петиции</a></li>#}
+{#                    <li><a href="#">Протоколы лечения</a></li>#}
                 </ul>
             </div>
         </div>
