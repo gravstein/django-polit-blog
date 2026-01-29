@@ -7,13 +7,21 @@
     <div class="row">
         <!-- Main Content Column -->
         <div class="col-lg-8">
-            <h1 class="mb-4">Новости</h1>
+
+            {% if current_category %}
+                <h1 class="mb-4">{{ current_category }}</h1>
+                {% if current_category.description %}
+                    <p>{{ current_category.description }}</p>
+                {% endif %}
+            {% else %}
+                <h1 class="mb-4">Новости</h1>
+            {% endif %}
 
             {% for news in news_list %}
                 <article class="news-card card">
                     <div class="card-body">
                         <div class="news-meta">
-                            <span class="ms-3">
+                            <span>
                                 <i class="far fa-calendar"></i>
                                 {{ news.date|date:"d.m.Y" }}
                             </span>
@@ -25,9 +33,9 @@
                                 {% endfor %}
                             </span>
                             <span class="ms-3">
-                        <i class="far fa-comment"></i>
-                        <a href="{{ news.get_absolute_url }}#comments">{{ news.comments_count }} комментариев</a>
-                    </span>
+                                <i class="far fa-comment"></i>
+                                <a href="{{ news.get_absolute_url }}#comments">{{ news.comments_count }} комментариев</a>
+                            </span>
                         </div>
 
                         <h2 class="card-title">
@@ -103,7 +111,6 @@
             <div class="sidebar-widget">
                 <h4>Поиск</h4>
                 <form method="get" action="{% url 'search_news' %}" class="search-form">
-{#                                    <form method="get" action="{% url 'search' %}">#}
                     <div class="input-group">
                         <input type="text" name="q" class="form-control" placeholder="Поиск по сайту..."
                                value="{{ request.GET.q }}">
