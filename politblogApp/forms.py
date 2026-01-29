@@ -1,6 +1,7 @@
 from django import forms
 from .models import News, Categories, Comments
 
+
 class NewsForm(forms.ModelForm):
     class Meta:
         model = News
@@ -15,24 +16,52 @@ class NewsForm(forms.ModelForm):
         }
         widgets = {
             'news_id': forms.NumberInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'title': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'content': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'date': forms.DateInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'author': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'category': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите заголовок новости'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 15,
+                'placeholder': 'Полный текст новости'
+            }),
+            'date': forms.DateTimeInput(attrs={
+                'class': 'form-control',
+                'type': 'datetime-local'
+            }),
+            'categories': forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input'
+            }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #self.fields['image'].required = False
+        self.fields['date'].required = True
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Categories
-        fields = "__all__"
+        fields = ['name', 'description', 'main_project']
         labels = {
             "category": "Category",
         }
         widgets = {
-            'category': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Название категории'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Описание категории (необязательно)'
+            }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #self.fields['image'].required = False
+        self.fields['main_project'].required = True
 
 class CommentForm(forms.ModelForm):
     class Meta:
