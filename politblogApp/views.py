@@ -24,40 +24,39 @@ def home_view(request):
 
     return render(request, 'content/home.html', context)
 
+def news_detail_view(request, slug):
+    news = get_object_or_404(News, slug=slug)
 
-def news_list_view(request):
-    Categories_id = request.GET.get('Categories')
-    categories = Categories.objects.all()
+    related_posts = News.objects.filter(
+        categories__in=news.categories.all(),
+    ).exclude(id=news.id).distinct()[:4]
 
-    if Categories_id:
-        news_s = News.objects.filter(Categories_id=Categories_id)
-    else:
-        news_s = News.objects.all()
+    form = CommentForm()
 
-    return render(request, 'politblogApp/-----.html', {
-        'news_s': news_s,
-        'categories': categories,
-        'selected_Categories': Categories_id
-    })
+    context = {
+        'news': news,
+        'related_posts': related_posts,
+        'categories': Categories.objects.all(),
+        'form': form
+    }
+    return render(request, 'content/article.html', context)
 
-
-def news_update_view(request, news_id):
-    news = News.objects.get(news_id=news_id)
-    form = NewsForm(instance=news)
-    if request.method == 'POST':
-        form = NewsForm(request.POST, instance=news)
-        if form.is_valid():
-            form.save()
-            return redirect('-----')
-    return render(request, 'politblogApp/-----.html', {'form': form})
-
-
-def product_delete_view(request, news_id):
-    news = News.objects.get(news_id=news_id)
-    if request.method == 'POST':
-        news.delete()
-        return redirect('-----')
-    return render(request, 'politblogApp/-----.html', {'news': news})
+# def news_update_view(request, news_id):
+#     news = News.objects.get(news_id=news_id)
+#     form = NewsForm(instance=news)
+#     if request.method == 'POST':
+#         form = NewsForm(request.POST, instance=news)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('-----')
+#     return render(request, 'politblogApp/-----.html', {'form': form})
+#
+# def product_delete_view(request, news_id):
+#     news = News.objects.get(news_id=news_id)
+#     if request.method == 'POST':
+#         news.delete()
+#         return redirect('-----')
+#     return render(request, 'politblogApp/-----.html', {'news': news})
 
 
 # search
@@ -94,6 +93,23 @@ def category_news_view(request, slug):
 
     return render(request, 'content/home.html', context)
 
+# comments
+def add_comment(request, id):
+    article = get_object_or_404(News, id=id)
+
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.article = article
+            comment.save()
+            return redirect('news_detail', slug=article.slug)
+    return redirect('news_detail', slug=article.slug)
+
+
+
+
+
 
 
 # admin
@@ -103,10 +119,8 @@ def admin_dashboard(request):
     """Панель управления для администратора"""
     context = {
         'total_news': News.objects.count(),
-        # 'published_news': News.objects.filter(status='published').count(),
-        # 'draft_news': News.objects.filter(status='draft').count(),
         'total_categories': Categories.objects.count(),
-        # 'total_tags': Tag.objects.count(),
+        'categories': Categories.objects.all(),
         'recent_news': News.objects.all()[:5],
     }
     return render(request, 'admin/dashboard.html', context)
@@ -121,7 +135,13 @@ def create_news_view(request):
         if form.is_valid():
             form.save()
             return redirect('home')
-    return render(request, 'admin/news_form.html', {'form': form})
+
+    context = {
+        'form': form,
+        'categories': Categories.objects.all(),
+    }
+
+    return render(request, 'admin/news_form.html', context)
 
 
 # ----- FOR CATEGORIES -----

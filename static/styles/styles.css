@@ -260,3 +260,20 @@ body {
 .partner-logos img:hover {
     transform: scale(1.05);
 }
+
+.card-body .btn {
+    color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    transition: background-color, color 0.2s;
+}
+.card-body .btn:checked+.card-body .btn, .card-body .btn.active,
+.card-body .btn.show, .card-body .btn:first-child:active,
+.card-body .btn:not(.btn-check)+.card-body .btn:active, .card-body .btn:hover
+{
+    color: #fff !important;
+    background-color: var(--accent-color) !important;
+}
+.card-title a {
+    color: var(--secondary-color) !important;
+}
+

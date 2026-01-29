@@ -7,7 +7,7 @@ class NewsForm(forms.ModelForm):
         model = News
         fields = "__all__"
         labels = {
-            "news_id": "News Id",
+            "id": "News Id",
             "title": "Title",
             "content": "Content",
             "date": "Date",
@@ -15,7 +15,7 @@ class NewsForm(forms.ModelForm):
             "category": "Category",
         }
         widgets = {
-            'news_id': forms.NumberInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
+            'id': forms.NumberInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Введите заголовок новости'
@@ -66,22 +66,19 @@ class CategoryForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comments
-        fields = "__all__"
+        fields = ['name', 'email', 'content', 'website']
+
         labels = {
-            "comment_id": "Comment Id",
-            "article_id": "Article Id",
-            "name": "Name",
-            "content": "Content",
-            "website": "Website",
-            "topic": "Topic",
-            "date": "Date",
+            "name": "Ваше имя",
+            "email": "Ваша почта",
+            "content": "Комментарий",
+            "website": "Ваш сайт",
         }
+
         widgets = {
-            'comment_id': forms.NumberInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'article_id': forms.NumberInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'name': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'content': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'website': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'topic': forms.TextInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
-            'date': forms.DateInput(attrs={'placeholder': 'e.g 1', 'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'placeholder': 'Введите имя', 'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Введите вашу почту', 'class': 'form-control'}),
+            'content': forms.Textarea(
+                attrs={'placeholder': 'Напишите что-нибудь...', 'class': 'form-control', 'rows': 4}),
+            'website': forms.URLInput(attrs={'placeholder': 'https://example.com/', 'class': 'form-control'}),
         }
