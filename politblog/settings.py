@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'unidecode',
+    'django_ckeditor_5',
 ]
 
 MIDDLEWARE = [
@@ -123,4 +124,42 @@ DATETIME_FORMAT = 'N j, Y H:i'
 STATIC_URL = 'static/'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'politblogApp/../static'),)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+CKEDITOR_5_FILE_STORAGE = "django.core.files.storage.FileSystemStorage" # или твой сторедж
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
+    },
+    'extends': {
+        'upload_url': '/ckeditor5/image_upload/',  # ОБЯЗАТЕЛЬНО ДОБАВЬ ЭТО
+        'blockToolbar': [
+            'paragraph', 'heading1', 'heading2', 'heading3',
+            '|', 'bulletedList', 'numberedList', 'uploadImage'
+        ],
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough',
+            'code', 'subscript', 'superscript', 'highlight', '|', 'insertImage',
+            'bulletedList', 'numberedList', 'todoList', '|', 'blockQuote', 'imageUpload', '|',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat',
+            'insertTable',
+        ],
+        # Настройка отображения картинок в самом редакторе
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight'],
+            'styles': ['alignLeft', 'alignCenter', 'alignRight']
+        }
+    }
+}
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+
+APPEND_SLASH = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

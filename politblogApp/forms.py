@@ -1,5 +1,6 @@
 from django import forms
 from .models import News, Categories, Comments
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 
 class NewsForm(forms.ModelForm):
@@ -20,11 +21,10 @@ class NewsForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Введите заголовок новости'
             }),
-            'content': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 15,
+            'content': CKEditor5Widget(attrs={
+                'class': 'django_ckeditor_5',
                 'placeholder': 'Полный текст новости'
-            }),
+            }, config_name="extends"),
             'date': forms.DateTimeInput(attrs={
                 'class': 'form-control',
                 'type': 'datetime-local'

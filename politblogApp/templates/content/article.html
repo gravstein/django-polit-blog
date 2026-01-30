@@ -30,7 +30,7 @@
         }
 
         .article-content h2 {
-            color: var(--primary-color);
+            color: var(--secondary-color);
             font-size: 24px;
             margin-top: 30px;
             margin-bottom: 15px;
@@ -53,9 +53,18 @@
             margin-bottom: 8px;
         }
 
+        .article-content img {
+            width: -webkit-fill-available;
+            height: auto;
+        }
+
         .article-content a {
             color: var(--primary-color);
             text-decoration: underline;
+        }
+
+        .article-content a:hover {
+            color: var(--accent-color);
         }
 
         .article-content a:hover {
@@ -87,7 +96,6 @@
         }
 
         .share-buttons {
-            margin-top: 30px;
             padding: 20px;
             background-color: #f8f9fa;
             border-radius: 5px;
@@ -124,6 +132,10 @@
 
         .share-vk {
             background-color: #45668e;
+        }
+
+        .share-whatsapp {
+            background-color: #128C7E;
         }
 
         .related-posts {
@@ -219,7 +231,14 @@
                            target="_blank" class="share-vk" title="VK">
                             <i class="fab fa-vk"></i>
                         </a>
+                        <a href="https://api.whatsapp.com/send?text={{ news.title }}%20{{ request.build_absolute_uri }}"
+                           target="_blank" class="share-whatsapp" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
+                    <button id="share-native" class="btn btn-outline-primary">
+                        <i class="fas fa-share-nodes"></i> Поделиться через...
+                    </button>
                 </div>
             </article>
 
@@ -252,7 +271,7 @@
                 </h3>
 
                 <!-- Add your comments system here -->
-                <form method="post" action="{% url 'add_comment' news.id %}">
+                <form method="post" action="{% url 'add_comment' news.id %}" class="comment_form">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-primary">Отправить</button>
@@ -268,9 +287,13 @@
                                 </small>
                                 </h5>
                                 <p class="card-text">{{ comment.content }}</p>
+                                {% if comment.email %}
+                                    <a href="mailto:{{ comment.email }}" class="btn btn-sm btn-outline-secondary"
+                                       target="_blank">Почта автора: {{ comment.email }}</a>
+                                {% endif %}
                                 {% if comment.website %}
                                     <a href="{{ comment.website }}" class="btn btn-sm btn-outline-secondary"
-                                       target="_blank">Сайт автора</a>
+                                       target="_blank">Сайт автора: {{ comment.website }}</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -312,4 +335,23 @@
             {#        </div>#}
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.getElementById('share-native').addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: '{{ news.title|escapejs }}',
+                        url: window.location.href
+                    });
+                } catch (err) {
+                    console.log('Отмена репоста');
+                }
+            } else {
+                alert('Ваш браузер не поддерживает нативный репост. Скопируйте ссылку вручную.');
+            }
+        });
+    </script>
 {% endblock %}

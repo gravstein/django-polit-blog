@@ -1,0 +1,10 @@
+<h2>Вход для админа</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Войти</button>
+</form>
+
+{% if form.errors %}
+    <p style="color: red;">Неверный логин или пароль, либо у вас нет прав.</p>
+{% endif %}

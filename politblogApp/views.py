@@ -1,15 +1,13 @@
 from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
 from .forms import NewsForm, CommentForm, CategoryForm
 from .models import News, Comments, Categories
 from django.db.models import Q
-
-
-# Проверка на администратора
-def is_admin(user):
-    return user.is_staff or user.is_superuser
 
 
 # ----- FOR NEWS -----
@@ -112,9 +110,10 @@ def add_comment(request, id):
 
 
 
+
 # admin
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_dashboard(request):
     """Панель управления для администратора"""
     context = {
@@ -125,9 +124,21 @@ def admin_dashboard(request):
     }
     return render(request, 'admin/dashboard.html', context)
 
+def login_view(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            # Проверяем, что это именно админ (is_staff)
+            if user.is_staff:
+                login(request, user)
+                return redirect('dashboard') # Название вашего пути в urls.py
+    else:
+        form = AuthenticationForm()
+    return render(request, "admin/login.html", {"form": form})
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def create_news_view(request):
     form = NewsForm()
     if request.method == 'POST':
@@ -145,8 +156,8 @@ def create_news_view(request):
 
 
 # ----- FOR CATEGORIES -----
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_categories(request):
     """Страница управления категориями и тегами"""
     categories = Categories.objects.all().prefetch_related('news')
@@ -155,14 +166,12 @@ def admin_categories(request):
         'categories': categories,
     }
     return render(request, 'admin/categories.html', context)
-
-
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_category_create(request):
     """Создание категории"""
     if request.method == 'POST':
-        name = request.POST.get('name')
+        name = request.POST.get('name', '').strip()
         description = request.POST.get('description', '')
         main_project = request.POST.get('main_project')
 
@@ -171,33 +180,29 @@ def admin_category_create(request):
         else:
             main_project = False
 
-        if name:
+        if name and name.isalnum():
             Categories.objects.create(name=name, description=description, main_project=main_project)
             messages.success(request, f'Категория "{name}" успешно создана!')
         else:
-            messages.error(request, 'Название категории обязательно!')
+            messages.error(request, 'Не корректное название категории')
 
     return redirect('admin_categories')
-
-
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_category_quick_add(request):
     """Быстрое создание категории"""
     if request.method == 'POST':
         name = request.POST.get('name')
 
-        if name:
+        if name and name.isalnum():
             Categories.objects.create(name=name)
             messages.success(request, f'Категория "{name}" добавлена!')
         else:
-            messages.error(request, 'Введите название категории!')
+            messages.error(request, 'Не корректное название категории')
 
     return redirect('admin_categories')
-
-
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_category_edit(request, pk):
     """Редактирование категории"""
     categories = get_object_or_404(Categories, pk=pk)
@@ -217,10 +222,8 @@ def admin_category_edit(request, pk):
         messages.success(request, f'Категория "{categories.name}" обновлена!')
 
     return redirect('admin_categories')
-
-
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_category_delete(request, pk):
     """Удаление категории"""
     categories = get_object_or_404(Categories, pk=pk)
