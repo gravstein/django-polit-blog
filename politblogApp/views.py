@@ -22,7 +22,7 @@ def about_us(request):
 
 # ----- FOR NEWS -----
 def home_view(request):
-    news_list = News.objects.all()
+    news_list = reversed(News.objects.all())
     categories = Categories.objects.all()
 
     context = {
@@ -56,7 +56,7 @@ def search_news_view(request):
     results = []
     if query:
         # Ищем совпадения в заголовке ИЛИ в контенте (игнорируя регистр)
-        results = News.objects.filter(
+        results = reversed(News).objects.filter(
             Q(title__icontains=query) | Q(content__icontains=query)
         ).distinct()
     return render(request, 'content/home.html', {
@@ -113,7 +113,6 @@ def admin_dashboard(request):
         'total_news': News.objects.count(),
         'total_categories': Categories.objects.count(),
         'categories': Categories.objects.all(),
-        'recent_news': News.objects.all()[:5],
     }
     return render(request, 'admin/dashboard.html', context)
 
@@ -157,7 +156,7 @@ def create_news_view(request):
 @login_required
 @user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_news_edit(request, pk):
-    news = get_object_or_404(News, pk=pk)
+    news = get_object_or_404(reversed(News), pk=pk)
 
     if request.method == 'POST':
         form = NewsForm(request.POST, request.FILES, instance=news)
@@ -182,7 +181,7 @@ def admin_news_edit(request, pk):
 @user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_news_delete(request, pk):
     """Удаление новости"""
-    news = get_object_or_404(News, pk=pk)
+    news = get_object_or_404(reversed(News), pk=pk)
 
     if request.method == 'POST':
         news.delete()
