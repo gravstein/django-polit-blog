@@ -115,7 +115,7 @@ def login_view(request):
             # Проверяем, что это именно админ (is_staff)
             if user.is_staff:
                 login(request, user)
-                return redirect('dashboard') # Название вашего пути в urls.py
+                return redirect('admin_dashboard') # Название вашего пути в urls.py
     else:
         form = AuthenticationForm()
     return render(request, "admin/login.html", {"form": form})
