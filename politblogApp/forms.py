@@ -36,13 +36,12 @@ class NewsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.fields['image'].required = False
         self.fields['date'].required = True
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Categories
-        fields = ['name', 'description', 'main_project']
+        fields = ['name', 'description', 'main_project', 'is_country']
         labels = {
             "category": "Category",
         }
@@ -60,8 +59,8 @@ class CategoryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.fields['image'].required = False
         self.fields['main_project'].required = True
+        self.fields['is_country'].required = True
 
 class CommentForm(forms.ModelForm):
     class Meta:

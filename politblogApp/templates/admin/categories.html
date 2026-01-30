@@ -113,12 +113,6 @@
             margin-bottom: 20px;
             opacity: 0.3;
         }
-
-        .alert-error {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
     </style>
 {% endblock %}
 
@@ -180,8 +174,9 @@
                         <th style="width: 40%;">Название</th>
                         <th style="width: 30%;">Slug (URL)</th>
                         <th style="width: 5%;">Основная</th>
+                        <th style="width: 5%;">Страна</th>
                         <th style="width: 10%;">Новостей</th>
-                        <th style="width: 15%;">Действия</th>
+                        <th style="width: 10%;">Действия</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -198,6 +193,9 @@
                             </td>
                             <td>
                                 <span class="badge-count">{{ category.main_project }}</span>
+                            </td>
+                            <td>
+                                <span class="badge-count">{{ category.is_country }}</span>
                             </td>
                             <td>
                                 <span class="badge-count">{{ category.news.count }}</span>
@@ -249,7 +247,14 @@
                                             <div class="mb-3">
                                                 <label class="form-label">Основная ли это категория?</label>
                                                 <input name="main_project" class="form-check"
-                                                       rows="3" type="checkbox" {% if category.main_project == True %}checked{% endif %}>
+                                                       rows="3" type="checkbox"
+                                                       {% if category.main_project == True %}checked{% endif %}>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Страна ли это?</label>
+                                                <input name="is_country" class="form-check"
+                                                       rows="3" type="checkbox"
+                                                       {% if category.is_country == True %}checked{% endif %}>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -332,6 +337,12 @@
                             <label class="form-label">
                                 Основная ли это категория?
                                 <input name="main_project" class="form-check" rows="3" type="checkbox">
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Страна ли это?
+                                <input name="is_country" class="form-check" rows="3" type="checkbox">
                             </label>
                         </div>
                         <small class="text-muted">

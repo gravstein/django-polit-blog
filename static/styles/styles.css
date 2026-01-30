@@ -1,12 +1,18 @@
 :root {
     --primary-color: #777;
     --secondary-color: #282a2b;
-    --accent-color: #e74c3c;
+    --accent-color: #da6d14;
 }
 
 body {
     font-family: 'Arial', sans-serif;
     color: #333;
+}
+
+.alert-error {
+    color: #721c24 !important;
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
 }
 
 /* Top Bar */
@@ -20,8 +26,10 @@ body {
 .top-bar a {
     color: #fff;
     text-decoration: none;
-    margin-left: 15px;
     transition: color 0.2s;
+}
+.top-bar a:not(:first-child) {
+    margin-left: 15px;
 }
 
 .top-bar a:hover {
@@ -321,4 +329,16 @@ body {
 {
     color: #fff !important;
     background-color: var(--accent-color) !important;
+}
+
+
+.container-fluid {
+   padding-left: 30px !important;   /* Базовые отступы */
+   padding-right: 30px !important;
+}
+@media (min-width: 1400px) {
+   .container-fluid {
+       padding-left: 200px !important;   /* Для больших экранов */
+       padding-right: 200px !important;
+   }
 }

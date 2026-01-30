@@ -11,6 +11,7 @@ class Categories(models.Model):
     slug = models.SlugField('URL', max_length=200, unique=True)
     description = models.TextField('Описание', blank=True)
     main_project = models.BooleanField(default=False)
+    is_country = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Категория'
