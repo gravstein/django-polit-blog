@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from unidecode import unidecode
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 # Create your models here.
@@ -28,7 +29,7 @@ class News(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField('Заголовок', max_length=300)
     slug = models.SlugField('URL', max_length=300, unique=True, blank=True)
-    content = models.TextField('Содержание')
+    content = CKEditor5Field('Содержание', config_name='extends')
     date = models.DateTimeField('Дата публикации', blank=True, null=True)
     categories = models.ManyToManyField(Categories, verbose_name='Категории', related_name='news')
 

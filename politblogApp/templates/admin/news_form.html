@@ -4,6 +4,7 @@
 {% block title %}{{ title }} - ITPC EECA{% endblock %}
 
 {% block extra_css %}
+{{ form.media.css }}
 <style>
     .admin-form-container {
         background: #fff;
@@ -66,9 +67,6 @@
     .btn-toolbar {
         display: flex;
         gap: 10px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 2px solid #dee2e6;
     }
 
     .image-preview {
@@ -85,6 +83,23 @@
     .required-mark {
         color: #dc3545;
         margin-left: 3px;
+    }
+
+    /* Настройка высоты редактора, чтобы он не был слишком маленьким */
+    .ck-editor__editable_inline {
+        min-height: 400px;
+    }
+
+    /* Чтобы редактор не вылезал за границы контейнера */
+    .ck-editor {
+        width: 100% !important;
+    }
+
+    .admin-form-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 </style>
 {% endblock %}
@@ -120,7 +135,7 @@
                 <!-- Основная информация -->
                 <div class="form-section">
                     <h4><i class="fas fa-edit"></i> Основная информация</h4>
-                    
+
                     <div class="form-group">
                         <label for="{{ form.title.id_for_label }}">
                             Заголовок
@@ -146,30 +161,10 @@
                     </div>
                 </div>
 
-                <!-- Изображение -->
-                <div class="form-section">
-                    <h4><i class="fas fa-image"></i> Изображение</h4>
-                    
-                    <div class="form-group">
-                        <label for="{{ form.image.id_for_label }}">Загрузить изображение</label>
-                        {{ form.image }}
-                        {% if form.image.errors %}
-                            <div class="text-danger mt-1">{{ form.image.errors }}</div>
-                        {% endif %}
-                        
-                        {% if news.image %}
-                        <div class="image-preview">
-                            <p class="mb-2"><strong>Текущее изображение:</strong></p>
-                            <img src="{{ news.image.url }}" alt="Preview">
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
                 <!-- Категории и теги -->
                 <div class="form-section">
                     <h4><i class="fas fa-tags"></i> Классификация</h4>
-                    
+
                     <div class="form-group">
                         <label>
                             Категории
@@ -193,7 +188,7 @@
                 <!-- Параметры публикации -->
                 <div class="form-section">
                     <h4><i class="fas fa-cog"></i> Параметры публикации</h4>
-                    
+
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -213,9 +208,9 @@
                     <button type="submit" class="btn btn-primary btn-lg">
                         <i class="fas fa-save"></i> {{ button_text }}
                     </button>
-{#                    <a href="{% url 'admin_news_list' %}" class="btn btn-secondary btn-lg">#}
-{#                        <i class="fas fa-times"></i> Отмена#}
-{#                    </a>#}
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-danger btn-lg">
+                        <i class="fas fa-times"></i> Отмена
+                    </a>
                     {% if news %}
                     <a href="{{ news.get_absolute_url }}" class="btn btn-info btn-lg" target="_blank">
                         <i class="fas fa-eye"></i> Предпросмотр
@@ -226,27 +221,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Можно добавить превью загруженного изображения
-    document.querySelector('#id_image').addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.querySelector('.image-preview');
-                if (!preview) {
-                    const newPreview = document.createElement('div');
-                    newPreview.className = 'image-preview';
-                    newPreview.innerHTML = '<p class="mb-2"><strong>Предпросмотр:</strong></p><img src="' + e.target.result + '" alt="Preview">';
-                    document.querySelector('#id_image').parentElement.appendChild(newPreview);
-                } else {
-                    preview.querySelector('img').src = e.target.result;
-                }
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-</script>
 {% endblock %}

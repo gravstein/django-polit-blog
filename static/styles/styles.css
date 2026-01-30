@@ -277,3 +277,31 @@ body {
     color: var(--secondary-color) !important;
 }
 
+.comment_form .btn {
+    color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    transition: background-color, color 0.2s;
+    background-color: transparent !important;
+}
+.comment_form .btn:checked+.comment_form .btn, .comment_form .btn.active,
+.comment_form .btn.show, .comment_form .btn:first-child:active,
+.comment_form .btn:not(.btn-check)+.comment_form .btn:active, .comment_form .btn:hover
+{
+    color: #fff !important;
+    background-color: var(--accent-color) !important;
+}
+
+.share-buttons .btn {
+    margin-top: 10px;
+    color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    transition: background-color, color 0.2s;
+    background-color: transparent !important;
+}
+.share-buttons .btn:checked+.share-buttons .btn, .share-buttons .btn.active,
+.share-buttons .btn.show, .share-buttons .btn:first-child:active,
+.share-buttons .btn:not(.btn-check)+.share-buttons .btn:active, .share-buttons .btn:hover
+{
+    color: #fff !important;
+    background-color: var(--accent-color) !important;
+}
