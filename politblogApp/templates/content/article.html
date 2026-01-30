@@ -170,6 +170,20 @@
         .related-post-card h5 a:hover {
             color: var(--accent-color);
         }
+
+        .admin-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-buttons .btn {
+            font-size: 13px;
+            padding: 6px 12px;
+        }
+
+        .admin-buttons .btn i {
+            font-size: 12px;
+        }
     </style>
 {% endblock %}
 
@@ -202,6 +216,19 @@
                 <div class="article-content">
                     {{ news.content|safe }}
                 </div>
+
+                {% if user.is_staff %}
+                    <div class="admin-buttons mt-2 mb-4">
+                        <a href="{% url 'admin_news_edit' news.id %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i> Редактировать
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal">
+                            <i class="fas fa-trash"></i> Удалить
+                        </button>
+                    </div>
+                {% endif %}
 
                 {% if news.tags.all %}
                     <div class="article-tags">
@@ -318,23 +345,34 @@
                     {% endfor %}
                 </ul>
             </div>
-
-            <!-- Newsletter Widget -->
-            {#        <div class="sidebar-widget bg-primary text-white">#}
-            {#            <h4 class="text-white border-bottom border-white">Подписка на рассылку</h4>#}
-            {#            <p>Получайте последние новости на свой email</p>#}
-            {#            <form method="post" action="{% url 'newsletter_subscribe' %}">#}
-            {#                {% csrf_token %}#}
-            {#                <div class="mb-2">#}
-            {#                    <input type="email" name="email" class="form-control" placeholder="Ваш email" required>#}
-            {#                </div>#}
-            {#                <button type="submit" class="btn btn-light w-100">#}
-            {#                    <i class="fas fa-envelope"></i> Подписаться#}
-            {#                </button>#}
-            {#            </form>#}
-            {#        </div>#}
         </div>
     </div>
+
+    {% if user.is_staff %}
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Удалить новость?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" action="{% url 'admin_news_delete' news.id %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <p>Вы уверены, что хотите удалить новость <strong>"{{ news.title }}"</strong>?</p>
+                            <p class="text-muted">Это действие нельзя будет отменить.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
 {% endblock %}
 
 {% block extra_js %}

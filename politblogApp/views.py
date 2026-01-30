@@ -39,23 +39,6 @@ def news_detail_view(request, slug):
     }
     return render(request, 'content/article.html', context)
 
-# def news_update_view(request, news_id):
-#     news = News.objects.get(news_id=news_id)
-#     form = NewsForm(instance=news)
-#     if request.method == 'POST':
-#         form = NewsForm(request.POST, instance=news)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('-----')
-#     return render(request, 'politblogApp/-----.html', {'form': form})
-#
-# def product_delete_view(request, news_id):
-#     news = News.objects.get(news_id=news_id)
-#     if request.method == 'POST':
-#         news.delete()
-#         return redirect('-----')
-#     return render(request, 'politblogApp/-----.html', {'news': news})
-
 
 # search
 def search_news_view(request):
@@ -137,6 +120,7 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, "admin/login.html", {"form": form})
 
+# for news
 @login_required
 @user_passes_test(lambda u: u.is_staff, login_url='/')
 def create_news_view(request):
@@ -153,6 +137,36 @@ def create_news_view(request):
     }
 
     return render(request, 'admin/news_form.html', context)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
+def admin_news_edit(request, pk):
+    """Редактирование новости"""
+    news = get_object_or_404(News, pk=pk)
+
+    if request.method == 'POST':
+        form = NewsForm(request.POST, request.FILES, instance=news)
+        if form.is_valid():
+            form.save()
+            return redirect('news_detail', slug=news.slug)
+    else:
+        form = NewsForm(instance=news)
+
+    context = {
+        'form': form,
+        'news': news,
+        'title': 'Редактировать новость',
+        'categories': Categories.objects.all(),
+    }
+    return render(request, 'admin/news_form.html', context)
+@login_required
+@user_passes_test(lambda u: u.is_staff, login_url='/')
+def admin_news_delete(request, pk):
+    """Удаление новости"""
+    news = get_object_or_404(News, pk=pk)
+
+    if request.method == 'POST':
+        news.delete()
+        return redirect('home')
 
 
 # ----- FOR CATEGORIES -----
