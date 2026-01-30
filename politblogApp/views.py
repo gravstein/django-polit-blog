@@ -10,6 +10,16 @@ from .models import News, Comments, Categories
 from django.db.models import Q
 
 
+# about us
+def about_us(request):
+    categories = Categories.objects.all()
+
+    context = {
+        'categories': categories
+    }
+
+    return render(request, 'content/about_us.html', context)
+
 # ----- FOR NEWS -----
 def home_view(request):
     news_list = News.objects.all()
@@ -126,28 +136,38 @@ def login_view(request):
 def create_news_view(request):
     form = NewsForm()
     if request.method == 'POST':
-        form = NewsForm(request.POST)
+        form = NewsForm(request.POST, request.FILES) # Добавь request.FILES для картинок
         if form.is_valid():
-            form.save()
-            return redirect('home')
+            try:
+                form.save()
+                messages.success(request, "Новость успешно создана!")
+                return redirect('create_news')
+            except:
+                # Эта ошибка поймает дубликат slug
+                messages.error(request, "Ошибка: Новость с таким заголовком уже существует (дубликат slug).")
+        else:
+            messages.error(request, "Пожалуйста, исправьте ошибки в форме.")
 
     context = {
         'form': form,
         'categories': Categories.objects.all(),
+        'title': 'Создать новость',
     }
-
     return render(request, 'admin/news_form.html', context)
 @login_required
 @user_passes_test(lambda u: u.is_staff, login_url='/')
 def admin_news_edit(request, pk):
-    """Редактирование новости"""
     news = get_object_or_404(News, pk=pk)
 
     if request.method == 'POST':
         form = NewsForm(request.POST, request.FILES, instance=news)
         if form.is_valid():
-            form.save()
-            return redirect('news_detail', slug=news.slug)
+            try:
+                form.save()
+                messages.success(request, "Новость обновлена!")
+                return redirect('news_detail', slug=news.slug)
+            except:
+                messages.error(request, "Не удалось сохранить: такой slug уже занят другой новостью.")
     else:
         form = NewsForm(instance=news)
 
@@ -186,19 +206,36 @@ def admin_category_create(request):
     """Создание категории"""
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
-        description = request.POST.get('description', '')
+        description = request.POST.get('description', '').strip()
         main_project = request.POST.get('main_project')
+        is_country = request.POST.get('is_country')
 
         if main_project == 'on':
             main_project = True
         else:
             main_project = False
-
-        if name and name.isalnum():
-            Categories.objects.create(name=name, description=description, main_project=main_project)
-            messages.success(request, f'Категория "{name}" успешно создана!')
+        if is_country == 'on':
+            is_country = True
         else:
-            messages.error(request, 'Не корректное название категории')
+            is_country = False
+
+        if not name:
+            messages.error(request, 'Название категории не может быть пустым!')
+            return redirect('admin_categories')
+        if Categories.objects.filter(name__iexact=name).exists():
+            messages.error(request, f'Категория с названием "{name}" уже существует!')
+            return redirect('admin_categories')
+
+        try:
+            Categories.objects.create(
+                name=name,
+                description=description,
+                main_project=main_project,
+                is_country=is_country
+            )
+            messages.success(request, f'Категория "{name}" успешно создана!')
+        except Exception as e:
+            messages.error(request, f'Ошибка при создании категории: {str(e)}')
 
     return redirect('admin_categories')
 @login_required
@@ -206,13 +243,20 @@ def admin_category_create(request):
 def admin_category_quick_add(request):
     """Быстрое создание категории"""
     if request.method == 'POST':
-        name = request.POST.get('name')
+        name = request.POST.get('name', '').strip()
 
-        if name and name.isalnum():
+        if not name:
+            messages.error(request, 'Введите название категории!')
+            return redirect('admin_categories')
+        if Categories.objects.filter(name__iexact=name).exists():
+            messages.error(request, f'Категория "{name}" уже существует!')
+            return redirect('admin_categories')
+
+        try:
             Categories.objects.create(name=name)
             messages.success(request, f'Категория "{name}" добавлена!')
-        else:
-            messages.error(request, 'Не корректное название категории')
+        except Exception as e:
+            messages.error(request, f'Ошибка: {str(e)}')
 
     return redirect('admin_categories')
 @login_required
@@ -221,19 +265,32 @@ def admin_category_edit(request, pk):
     """Редактирование категории"""
     categories = get_object_or_404(Categories, pk=pk)
 
-    main_project = request.POST.get('main_project')
-
-    if main_project == 'on':
-        categories.main_project = True
-    else:
-        categories.main_project = False
-
     if request.method == 'POST':
-        categories.name = request.POST.get('name')
-        categories.slug = request.POST.get('slug')
-        categories.description = request.POST.get('description', '')
-        categories.save()
-        messages.success(request, f'Категория "{categories.name}" обновлена!')
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+        main_project = request.POST.get('main_project')
+        is_country = request.POST.get('is_country')
+
+        # Проверка на пустое имя
+        if not name:
+            messages.error(request, 'Название категории не может быть пустым!')
+            return redirect('admin_categories')
+
+        # Проверяем, не занято ли имя другой категорией (исключая текущую)
+        if Categories.objects.filter(name__iexact=name).exclude(pk=pk).exists():
+            messages.error(request, f'Категория с названием "{name}" уже существует!')
+            return redirect('admin_categories')
+
+        # Обновляем категорию
+        try:
+            categories.name = name
+            categories.description = description
+            categories.main_project = (main_project == 'on')
+            categories.is_country = (is_country == 'on')
+            categories.save()
+            messages.success(request, f'Категория "{categories.name}" обновлена!')
+        except Exception as e:
+            messages.error(request, f'Ошибка при обновлении: {str(e)}')
 
     return redirect('admin_categories')
 @login_required
@@ -244,7 +301,10 @@ def admin_category_delete(request, pk):
 
     if request.method == 'POST':
         name = categories.name
-        categories.delete()
-        messages.success(request, f'Категория "{name}" удалена!')
+        try:
+            categories.delete()
+            messages.success(request, f'Категория "{name}" удалена!')
+        except Exception as e:
+            messages.error(request, f'Ошибка при удалении: {str(e)}')
 
     return redirect('admin_categories')

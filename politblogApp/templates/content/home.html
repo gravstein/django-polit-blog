@@ -126,17 +126,10 @@
                 <h4>Рубрики</h4>
                 <ul>
                     {% for cat in categories %}
-                        {% if not cat.main_project %}
+                        {% if not cat.main_project and not cat.is_country %}
                             <li><a href="{% url 'category_news' cat.slug %}">{{cat.name}}</a></li>
                         {% endif %}
                     {% endfor %}
-
-{#                    <li><a href="#">Плакаты</a></li>#}
-{#                    <li><a href="#">Исследования</a></li>#}
-{#                    <li><a href="#">Презентации</a></li>#}
-{#                    <li><a href="#">Обучение</a></li>#}
-{#                    <li><a href="#">Петиции</a></li>#}
-{#                    <li><a href="#">Протоколы лечения</a></li>#}
                 </ul>
             </div>
         </div>

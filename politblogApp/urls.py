@@ -7,6 +7,7 @@ urlpatterns = [
     path('category/<slug:slug>/', views.category_news_view, name='category_news'),
     path('search', views.search_news_view, name='search_news'),
     path('comment/<int:id>/', views.add_comment, name='add_comment'),
+    path('about-us/', views.about_us, name='about_us'),
 
     # admin
     path('create/', views.create_news_view, name='create_news'),
