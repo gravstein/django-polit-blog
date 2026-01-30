@@ -13,6 +13,9 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
 
+    path('news/<int:pk>/edit/', views.admin_news_edit, name='admin_news_edit'),
+    path('news/<int:pk>/delete/', views.admin_news_delete, name='admin_news_delete'),
+
     # Категории
     path('categories/', views.admin_categories, name='admin_categories'),
     path('categories/create/', views.admin_category_create, name='admin_category_create'),
